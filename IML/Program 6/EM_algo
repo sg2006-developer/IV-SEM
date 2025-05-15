@@ -1,0 +1,30 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.mixture import GaussianMixture
+from scipy.stats import norm
+import seaborn as sns
+
+
+mu1, sigma1 = 2, 1
+mu2, sigma2 = -1, 0.8
+X1 = np.random.normal(mu1, sigma1, size=200)
+X2 = np.random.normal(mu2, sigma2, size=600)
+X = np.concatenate([X1, X2])
+X_reshaped = X.reshape(-1, 1)
+
+
+gmm = GaussianMixture(n_components=2, random_state=0)
+gmm.fit(X_reshaped)
+
+
+x_grid = np.linspace(min(X), max(X), 1000).reshape(-1, 1)
+density_estimation = np.exp(gmm.score_samples(x_grid))
+
+
+sns.kdeplot(X, label="Actual Density", fill=True)
+plt.plot(x_grid, density_estimation, label='Estimated Density\n(Gaussian Mixture Model)', color='red')
+plt.xlabel('X')
+plt.ylabel('Density')
+plt.title('Density Estimation using GMM')
+plt.legend()
+plt.show()
