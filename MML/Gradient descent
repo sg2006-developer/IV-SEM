@@ -1,0 +1,20 @@
+from sympy import *
+x,y = symbols('x y')
+f = x - y + 2*x**2 + 2*x*y + y**2
+F = Matrix([[diff(f,x)],[diff(f,y)]])
+# display(F)
+H = hessian(f,(x,y))
+point = {x:0,y:0}
+for i in range(6):
+    
+    display(point)
+    S = -F.subs(point)
+    lamda_num = S.T * S
+    lamda_den = S.T * H.subs(point) * S
+    lamda = lamda_num[0]/lamda_den[0]
+    print("Lamda:",lamda)
+    lam = lamda*S
+    print(lam)
+    point[x] = point[x] + lam[0]
+    point[y] = point[y] + lam[1] 
+    # print(point)
