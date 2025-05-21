@@ -1,0 +1,23 @@
+import sympy as sp
+
+x, y, z, λ = sp.symbols('x y z lambda')
+f = (x - 3)**2 + (y - 4)**2 + (z - 12)**2
+g = x**2 + y**2 + z**2 - 1
+L = f + λ * g
+grad_L = [sp.diff(L, var) for var in (x, y, z, λ)]
+solutions = sp.solve(grad_L, (x, y, z, λ), dict=True)
+
+distances = []
+for sol in solutions:
+    x_val = sol[x]
+    y_val = sol[y]
+    z_val = sol[z]
+    d_squared = (x_val - 3)**2 + (y_val - 4)**2 + (z_val - 12)**2
+    d = sp.sqrt(d_squared)
+    distances.append((d.evalf(), (x_val.evalf(), y_val.evalf(), z_val.evalf())))
+
+min_distance = min(distances, key=lambda x: x[0])
+max_distance = max(distances, key=lambda x: x[0])
+
+print("Minimum Distance:", min_distance)
+print("Maximum Distance:", max_distance)
