@@ -1,0 +1,17 @@
+from sympy import *
+x,y = symbols('x y')
+f = x - y + 2*x**2 + 2*x*y + y**2
+F = Matrix([[diff(f,x)],[diff(f,y)]])
+# display(F)
+H = hessian(f,(x,y))
+point = {x:0,y:0}
+for i in range(3):
+    print(f"Iteration {i}:")
+    F_point = F.subs(point)
+    H_point = H.subs(point)
+    H_inv = H_point.inv()
+    point[x]=point[x]-(H_inv*F_point)[0]
+    point[y]=point[y]-(H_inv*F_point)[1]
+    print("    Gradient: ", F.subs(point))
+    print("    Point: ",point)
+print("Minimum value: f(x)=",f.subs(point))
