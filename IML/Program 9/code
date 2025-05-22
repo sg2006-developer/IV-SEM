@@ -1,0 +1,69 @@
+from itertools import combinations
+
+def generate_C1(dataset):
+    C1 = set()
+    for transaction in dataset:
+        for item in transaction:
+            C1.add(frozenset([item]))
+    return C1
+
+def generate_L1(dataset, C1, min_support):
+    item_count = {}
+    for transaction in dataset:
+        for item in transaction:
+            itemset = frozenset([item])
+            item_count[itemset] = item_count.get(itemset, 0) + 1
+    L1 = {itemset for itemset, count in item_count.items() if count >= min_support}
+    return L1, item_count
+
+def generate_Ck(Lk_minus_1, k):
+    Ck = set()
+    Lk_list = list(Lk_minus_1)
+    for i in range(len(Lk_list)):
+        for j in range(i+1, len(Lk_list)):
+            union_set = Lk_list[i] | Lk_list[j]
+            if len(union_set) == k:
+                Ck.add(union_set)
+    return Ck
+
+def generate_Lk(dataset, Ck, min_support):
+    item_count = {}
+    for transaction in dataset:
+        t_set = set(transaction)
+        for itemset in Ck:
+            if itemset.issubset(t_set):
+                item_count[itemset] = item_count.get(itemset, 0) + 1
+    Lk = {itemset for itemset, count in item_count.items() if count >= min_support}
+    return Lk, item_count
+
+def apriori(dataset, min_support):
+    C1 = generate_C1(dataset)
+    L1, item_count = generate_L1(dataset, C1, min_support)
+    L = [L1]
+    k = 2
+    current_L = L1
+    while current_L:
+        Ck = generate_Ck(current_L, k)
+        current_L, current_count = generate_Lk(dataset, Ck, min_support)
+        item_count.update(current_count)
+        if current_L:
+            L.append(current_L)
+        k += 1
+    return L, item_count
+
+dataset = [
+    ['bread', 'milk'],
+    ['bread', 'diaper', 'beer', 'egg'],
+    ['milk', 'diaper', 'beer', 'cola'],
+    ['bread', 'milk', 'diaper', 'beer'],
+    ['bread', 'milk', 'diaper', 'cola']
+]
+
+min_support = 3
+frequent_itemsets, item_count = apriori(dataset, min_support)
+
+for k, Lk in enumerate(frequent_itemsets):
+    print(f"Frequent {k+1}-itemsets:")
+    for itemset in Lk:
+        print(f"{set(itemset)} (support: {item_count[itemset]})")
+    print()
