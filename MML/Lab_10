@@ -1,0 +1,27 @@
+import sympy as sp
+
+x = sp.symbols('x')
+
+a = -2
+b = 3
+f = x**2 - 2.6*x +2
+def F(n):
+    if n==0 or n==1 or n==2:
+        return 1
+    else:
+        return F(n-1)+F(n-2)
+n = 6
+for i in range(0,6):
+    print("range: ",a," " ,b)
+    L = F(n-i)*(b-a)/F(n-i+1)
+    xk = b - L
+    yk = a + L
+    
+    if( f.subs({x:xk}) > f.subs({x:yk})):
+        a = xk
+    elif(f.subs({x:xk}) < f.subs({x:yk})):
+        b = yk
+    else:
+        break
+    print("x=",(a+b)/2)
+print(f.subs({x:(a+b)/2}))
